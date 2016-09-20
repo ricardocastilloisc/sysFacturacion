@@ -3,17 +3,118 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       lang="es"
-      >
-    
+
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
     <body>
-        
+
         <ui:composition template="./../../plantillla/plantilla.xhtml">
-            
+
             <ui:define name="content">
                 <h1>Datos de clientes</h1>
+                <h:form>
+                    <p:commandButton value="Nuevo Cliente" actionListener="#{clienteBean.prepararNuevoCliente()}"
+                                     oncomplete="PF('dialogNuevoCliente').show();" 
+                                     update="formNuevoCliente" />
+
+                </h:form>
+                <h:form id="formMostrarClientes">
+                    <p:dataTable id="tablaClientes" paginator="true" paginatorPosition="top"
+                                 var="ct" value="#{clienteBean.listaClientes}" emptyMessage="No hay datos de clientes">
+                        <p:column headerText="Codigo">
+                            <h:outputText value="#{ct.codCliente}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre del cliente">
+                            <h:outputText value="#{ct.nombres} #{ct.apellidos}" />
+                        </p:column>
+
+                        <p:column headerText="Dirección">
+                            <h:outputText value="#{ct.direccion}" />
+                        </p:column>
+                        <p:column headerText="Modificar">
+                            <!--oncomplete va servir para llamar el formulario escondido de dialogo-->
+                            <p:commandButton  value="Modificar" oncomplete="PF('dialogModificarCliente').show();" 
+                                              update="formModificarCliente">
+                                <!--Esta parte es para rellenar la ventana donde estaran los datos
+                                en el value estara la variabale que pusimos desde el data table-->
+                                <f:setPropertyActionListener target="#{clienteBean.cliente}" value="#{ct}" />
+                            </p:commandButton>
+                        </p:column>
+
+                        <p:column headerText="Eliminar">
+                            <p:commandButton  value="Eliminar" oncomplete="PF('dialogEliminarCliente').show();" 
+                                              update="formEliminarCliente">
+
+                                <f:setPropertyActionListener target="#{clienteBean.cliente}" value="#{ct}" />
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+                </h:form>
+                <h:form id="formNuevoCliente">
+                    <p:dialog id="digNuevoCliente" widgetVar="dialogNuevoCliente" resizable="false" showEffect="explode"
+                              hideEffect="explode" modal="true">
+                        <p:panelGrid columns="2" style="margin: 0 auto">
+                            <p:outputLabel value="Nombres"/>
+                            <p:inputText value="#{clienteBean.cliente.nombres}"/>
+                            <p:outputLabel value="Apellidos"/>
+                            <p:inputText value="#{clienteBean.cliente.apellidos}"/>
+                            <p:outputLabel value="Direccion"/>
+                            <p:inputText value="#{clienteBean.cliente.direccion}"/>
+                        </p:panelGrid>
+                        <p:commandButton value="Guardar" actionListener="#{clienteBean.nuevoCliente()}" 
+                                         update=":formMostrarClientes:tablaClientes" 
+                                         oncomplete="PF('dialogNuevoCliente').hide();" />
+                        <p:commandButton value="Cancelar"  
+                                         onclick="PF('dialogNuevoCliente').hide();" />
+
+                    </p:dialog>
+                </h:form>
+
+                <h:form id="formModificarCliente">
+                    <p:dialog id="digModificarCliente" widgetVar="dialogModificarCliente" resizable="false" showEffect="explode"
+                              hideEffect="explode" modal="true">
+                        <p:panelGrid columns="2" style="margin: 0 auto">
+                            <p:outputLabel value="Nombres"/>
+                            <p:inputText value="#{clienteBean.cliente.nombres}"/>
+                            <p:outputLabel value="Apellidos"/>
+                            <p:inputText value="#{clienteBean.cliente.apellidos}"/>
+                            <p:outputLabel value="Direccion"/>
+                            <p:inputText value="#{clienteBean.cliente.direccion}"/>
+                        </p:panelGrid>
+                        <p:commandButton value="Guardar" actionListener="#{clienteBean.modificarCliente()}" 
+                                         update=":formMostrarClientes:tablaClientes" 
+                                         oncomplete="PF('dialogModificarCliente').hide();" />
+                        <p:commandButton value="Cancelar"
+                                         onclick="PF('dialogModificarCliente').hide();" />
+
+                    </p:dialog>
+                </h:form>
+
+                <h:form id="formEliminarCliente">
+                    <p:dialog id="digEliminarCliente" widgetVar="dialogEliminarCliente" resizable="false" showEffect="explode"
+                              hideEffect="explode" modal="true">
+
+
+                        <h:outputText value="¿Desea eliminar este registro?" />
+
+
+                        <p:commandButton value="Si" actionListener="#{clienteBean.eliminarCliente()}" 
+                                         update=":formMostrarClientes:tablaClientes" 
+                                         oncomplete="PF('dialogEliminarCliente').hide();" />
+                        <p:commandButton value="No"
+                                         onclick="PF('dialogEliminarCliente').hide();" />
+
+                    </p:dialog>
+                </h:form>
+
+
             </ui:define>
 
         </ui:composition>
-        
+
     </body>
 </html>
